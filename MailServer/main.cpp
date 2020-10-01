@@ -1,4 +1,6 @@
 /* myserver.c */
+#include <iostream>
+#include <ostream>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -8,6 +10,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <string>
+#include <sstream>
+#include <vector>
+#include <fstream>
+#include "ServerFunktionen.h"
 #define BUF 1024
 #define PORT 6543 /** Not in Use anymore ! Will be entered as parameter by the User **/
 
@@ -29,6 +35,12 @@ using std::string;
 
 int main (int argc, char **argv ) {
   int create_socket, new_socket;
+   //-----------LAB-------------
+    std::string send_user = "if19b127";
+    std::string recive_user = "if18b144";
+    std::string subject = "zweiterVersuch";
+    std::string csvfile = "data.csv";
+    //-------------------------
   socklen_t addrlen;
   char buffer[BUF];
   unsigned int port = -1; // In error case port = -1
@@ -78,11 +90,46 @@ int main (int argc, char **argv ) {
         send(new_socket, buffer, strlen(buffer),0);
      }
      do {
-        size = recv (new_socket, buffer, BUF-1, 0);
+        size = recv (new_socket, buffer, BUF-1, 0); // Returns ß if connection was lost
         if( size > 0)
         {
            buffer[size] = '\0';
-           printf ("Message received: %s\n", buffer);
+           std::stringstream client_message(buffer);
+           string line = "";
+           getline(client_message, line);
+
+           if( line == "send" || line == "SEND" ) // => Handle SEND Request
+           {
+                string sender;
+                string recipient;
+                string subject_matter;
+                string txt_message;
+                getline(client_message, sender);
+                getline(client_message, recipient);
+                getline(client_message, subject_matter);
+                while(getline(client_message, line))
+                {
+                    txt_message += line;
+                    txt_message += '\n'; // Keeps original spacing with newlines this way
+                }
+
+                create_new_entry(csvfile, sender, recipient, subject_matter, txt_message);
+
+           }
+
+           printf ("Message received: SEND-Request - OK \n");
+       //------------------LAB------------------------------------------------
+            //std::string message(buffer);                                         //aus den chars wird ein string erstellt
+            //create_new_entry(csvfile, send_user, recive_user, subject, message); //die "write" Funktion wird aufgerufen
+
+            bool deleted = delete_message(csvfile, recive_user, 4);
+
+            //std::cout << "User hat " << count << " Nachrichten empfangen" << std::endl;
+            if (deleted)
+            {
+                std::cout << "Nachricht wurde geloescht" << std::endl;
+            }
+        //----------------------------------------------------------
         }
         else if (size == 0)
         {
