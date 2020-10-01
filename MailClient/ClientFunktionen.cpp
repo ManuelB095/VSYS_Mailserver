@@ -12,7 +12,7 @@
 
 /* Function Block */
 
-unsigned int count_elements(char* arr, unsigned int arr_len)
+unsigned int count_elements(char* arr, unsigned int arr_len) // Obsolete with strlen
 {
     unsigned int counter = 0;
     while(arr[counter] != '\0' && arr[counter] != '\n')

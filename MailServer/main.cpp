@@ -36,9 +36,6 @@ using std::string;
 int main (int argc, char **argv ) {
   int create_socket, new_socket;
    //-----------LAB-------------
-    std::string send_user = "if19b127";
-    std::string recive_user = "if18b144";
-    std::string subject = "zweiterVersuch";
     std::string csvfile = "data.csv";
     //-------------------------
   socklen_t addrlen;
@@ -122,13 +119,13 @@ int main (int argc, char **argv ) {
             //std::string message(buffer);                                         //aus den chars wird ein string erstellt
             //create_new_entry(csvfile, send_user, recive_user, subject, message); //die "write" Funktion wird aufgerufen
 
-            bool deleted = delete_message(csvfile, recive_user, 4);
-
-            //std::cout << "User hat " << count << " Nachrichten empfangen" << std::endl;
-            if (deleted)
-            {
-                std::cout << "Nachricht wurde geloescht" << std::endl;
-            }
+//            bool deleted = delete_message(csvfile, recive_user, 4);
+//
+//            //std::cout << "User hat " << count << " Nachrichten empfangen" << std::endl;
+//            if (deleted)
+//            {
+//                std::cout << "Nachricht wurde geloescht" << std::endl;
+//            }
         //----------------------------------------------------------
         }
         else if (size == 0)

@@ -30,20 +30,6 @@
      **/
 
 /* Edited by Natzki */
-using std::string;
-
-
-
-
-
-
-
-
-
-
-/* Edited by Natzki */
-
-
 int main (int argc, char **argv) {
   int create_socket;
   char buffer[BUF];
@@ -52,7 +38,7 @@ int main (int argc, char **argv) {
 
   /* Edited by Natzki */
   unsigned int port = -1;
-  string ip_address = "ERR";
+  std::string ip_address = "ERR";
 
   if( argc < 3 ){
      printf("Usage: %s IP-Address PortNumber\n", argv[0]);
@@ -124,13 +110,3 @@ int main (int argc, char **argv) {
   close (create_socket);
   return EXIT_SUCCESS;
 }
-
-/* Edited by Natzki */
-
-
-
-/* Edited by Natzki */
-
-
-
-
