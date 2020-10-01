@@ -87,7 +87,7 @@ int main (int argc, char **argv ) {
         send(new_socket, buffer, strlen(buffer),0);
      }
      do {
-        size = recv (new_socket, buffer, BUF-1, 0); // Returns ß if connection was lost
+        size = recv (new_socket, buffer, BUF-1, 0); // Returns -1 if connection was lost
         if( size > 0)
         {
            buffer[size] = '\0';
@@ -109,12 +109,31 @@ int main (int argc, char **argv ) {
                     txt_message += line;
                     txt_message += '\n'; // Keeps original spacing with newlines this way
                 }
-
                 create_new_entry(csvfile, sender, recipient, subject_matter, txt_message);
+                printf ("Message received: SEND-Request - OK \n");
 
            }
+           if( line == "read" || line == "READ" ) // => Handle READ Request
+           {
+                string username;
+                string temp;
+                int message_nr = -1;
+                getline(client_message, username);
+                getline(client_message, temp); message_nr = std::stoi(temp);
 
-           printf ("Message received: SEND-Request - OK \n");
+                string sendback_buffer;
+                std::vector<std::string> requested_message = show_message(csvfile, username, message_nr);
+                for(std::vector<std::string>::iterator i = requested_message.begin(); i != requested_message.end(); ++i)
+                {
+                    std::cout << *i << std::endl;
+                    sendback_buffer += *i;
+                    sendback_buffer += '\n';
+                }
+                printf ("Processing read request... \n");
+                send(new_socket, sendback_buffer.c_str(), strlen(sendback_buffer.c_str()),0);
+                printf ("READ-Request - OK \n");
+
+           }
        //------------------LAB------------------------------------------------
             //std::string message(buffer);                                         //aus den chars wird ein string erstellt
             //create_new_entry(csvfile, send_user, recive_user, subject, message); //die "write" Funktion wird aufgerufen

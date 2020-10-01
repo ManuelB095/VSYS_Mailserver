@@ -104,6 +104,26 @@ int main (int argc, char **argv) {
         }
         printf("Successfully sent message!\n");
      }
+     if(strcmp(buffer, "READ\n") == 0 || strcmp(buffer, "read\n") == 0)
+     {
+        if(handle_READ_request(create_socket, buffer, 8) == -1)
+        {
+            memset(&buffer,'\0',sizeof(buffer)); // Reset buffer to ZERO
+            perror("READ Request not successful! Abort...");
+            continue; // Continue with loop
+        }
+        printf("Successfully sent READ-Request!\n Waiting on server...\n");
+
+        // Response from Server:
+        printf("READ: \n");
+        memset(&buffer,'\0',sizeof(buffer));
+        size=recv(create_socket,buffer,BUF-1, 0);
+        if (size>0)
+        {
+           buffer[size]= '\0';
+           printf("%s",buffer);
+        }
+     }
      /* Edited by Natzki */
   }
   while (strcmp (buffer, "quit\n") != 0);
