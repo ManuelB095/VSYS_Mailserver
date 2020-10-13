@@ -122,6 +122,7 @@ int main (int argc, char **argv ) {
                 getline(client_message, temp); message_nr = std::stoi(temp);
 
                 string sendback_buffer;
+                printf ("Processing read request... \n");
                 std::vector<std::string> requested_message = show_message(csvfile, username, message_nr);
                 for(std::vector<std::string>::iterator i = requested_message.begin(); i != requested_message.end(); ++i)
                 {
@@ -129,10 +130,44 @@ int main (int argc, char **argv ) {
                     sendback_buffer += *i;
                     sendback_buffer += '\n';
                 }
-                printf ("Processing read request... \n");
-                send(new_socket, sendback_buffer.c_str(), strlen(sendback_buffer.c_str()),0);
-                printf ("READ-Request - OK \n");
 
+                send(new_socket, sendback_buffer.c_str(), strlen(sendback_buffer.c_str()),0);
+
+                /** TO DO: Compromise on a better way to handle that. Also: German/English - which one should we use?**/
+                if(requested_message.back() == "Fehler. Sie haben nicht so viele Nachrichten")
+                {
+                    printf ("READ-Request - ERR \n");
+                }
+                else
+                {
+                    printf ("READ-Request - OK \n");
+                }
+           }
+           if( line == "del" || line == "DEL" ) // => Handle DELETE Request
+           {
+                string username;
+                string temp;
+                int message_nr = -1;
+                getline(client_message, username);
+                getline(client_message, temp); message_nr = std::stoi(temp);
+
+                string sendback_buffer;
+                printf("Processing delete request... \n");
+                bool hasDeleted = delete_message(csvfile, username, message_nr);
+                if(hasDeleted)
+                {
+                  sendback_buffer = "Message of user '"; sendback_buffer += username; sendback_buffer += "' with Msg-Nr.: ";
+                  sendback_buffer += std::to_string(message_nr); sendback_buffer += " was successfully deleted!\n";
+                  send(new_socket, sendback_buffer.c_str(), strlen(sendback_buffer.c_str()),0);
+                  printf ("DEL-Request - OK \n");
+                }
+                else
+                {
+                  sendback_buffer = "Could not delete message of user '"; sendback_buffer += username; sendback_buffer += "' with Msg-Nr.: ";
+                  sendback_buffer += std::to_string(message_nr); sendback_buffer += "!\n";
+                  send(new_socket, sendback_buffer.c_str(), strlen(sendback_buffer.c_str()),0);
+                  printf ("DEL-Request - ERR \n");
+                }
            }
        //------------------LAB------------------------------------------------
             //std::string message(buffer);                                         //aus den chars wird ein string erstellt

@@ -24,4 +24,12 @@ int handle_SEND_request(int socketfd, char* buffer, int sender_len, int recipien
 // Handle the whole READ-Request
 int handle_READ_request(int socketfd, char* buffer, unsigned int user_len, unsigned int buffer_MAX_len = BUF);
 
+// Handle the whole LIST-Request
+int handle_LIST_request(int socketfd, char* buffer, unsigned int user_len, unsigned int buffer_MAX_len = BUF);
+
+// Handle the whole DEL-Request
+int handle_DEL_request(int socketfd, char* buffer, unsigned int user_len, unsigned int buffer_MAX_len = BUF);
+
+
+
 #endif

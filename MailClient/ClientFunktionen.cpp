@@ -156,3 +156,51 @@ int handle_READ_request(int socketfd, char* buffer, unsigned int user_len, unsig
     return 0;
 }
 
+int handle_LIST_request(int socketfd, char* buffer, unsigned int user_len, unsigned int buffer_MAX_len /*= BUF*/)
+{
+    // Communicate LIST Request to Server, so he knows what to expect!
+    memset(buffer, '\0', buffer_MAX_len*sizeof(char));
+    strcat(buffer, "LIST\n");
+
+    // Step 1: Ask for Username
+    std::string message = "Please enter username (max. ";
+    message += std::to_string(user_len); message += " characters): ";
+    if(handle_ALPHANUMERIC_message(message, socketfd, buffer, user_len) == -1)
+    {
+        return -1;
+    }
+
+    // Step 2: Send the whole message:
+    send(socketfd, buffer, strlen(buffer), 0);
+
+    return 0;
+}
+
+int handle_DEL_request(int socketfd, char* buffer, unsigned int user_len, unsigned int buffer_MAX_len /*= BUF*/)
+{
+    // Communicate SEND Request to Server, so he knows what to expect!
+    memset(buffer, '\0', buffer_MAX_len*sizeof(char));
+    strcat(buffer, "DEL\n");
+
+    // Step 1: Ask for Username
+    std::string message = "Please enter username (max. ";
+    message += std::to_string(user_len); message += " characters): ";
+    if(handle_ALPHANUMERIC_message(message, socketfd, buffer, user_len) == -1)
+    {
+        return -1;
+    }
+
+    // Step 2: Ask for Message-Number ( Included digit size, because buffer can only hold 1024 characters and last one must be '\0'
+    message = "Please enter the message-number (max. ";
+    int input_len = buffer_MAX_len - user_len;
+    message += std::to_string(input_len); message += " digits): ";
+    if(handle_NUMERIC_message(message, socketfd, buffer, input_len) == -1)
+    {
+        return -1;
+    }
+
+    // Step 3: Send the whole message:
+    send(socketfd, buffer, strlen(buffer), 0);
+
+    return 0;
+}

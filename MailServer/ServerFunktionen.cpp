@@ -164,7 +164,10 @@ bool delete_message(std::string csvfile, std::string recive_user, int file_numbe
 		if (count != line_number)
 		{
 			newfile << line << std::endl;
-			std::cout << count << " " << line << std::endl;
+			/* Edited by Natzki */
+			// Commented this out for now, since it is not needed to show in console anymore.
+			// std::cout << count << " " << line << std::endl;
+			/* Edited by Natzki */
 		}
 		count++; //der Count ist nach dem Durchlauf, da im csv File die erste Line immer leer ist.
 	}

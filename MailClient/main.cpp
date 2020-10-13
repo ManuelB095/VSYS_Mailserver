@@ -124,6 +124,46 @@ int main (int argc, char **argv) {
            printf("%s",buffer);
         }
      }
+      if(strcmp(buffer, "LIST\n") == 0 || strcmp(buffer, "list\n") == 0)
+     {
+        if(handle_LIST_request(create_socket, buffer, 8) == -1)
+        {
+            memset(&buffer,'\0',sizeof(buffer)); // Reset buffer to ZERO
+            perror("READ Request not successful! Abort...");
+            continue; // Continue with loop
+        }
+        printf("Successfully sent LIST-Request!\n Waiting on server...\n");
+
+        // Response from Server:
+        printf("LIST: \n");
+        memset(&buffer,'\0',sizeof(buffer));
+        size=recv(create_socket,buffer,BUF-1, 0);
+        if (size>0)
+        {
+           buffer[size]= '\0';
+           printf("%s",buffer);
+        }
+     }
+     if(strcmp(buffer, "DEL\n") == 0 || strcmp(buffer, "del\n") == 0)
+     {
+        if(handle_DEL_request(create_socket, buffer, 8) == -1)
+        {
+            memset(&buffer,'\0',sizeof(buffer)); // Reset buffer to ZERO
+            perror("DEL Request not successful! Abort...");
+            continue; // Continue with loop
+        }
+        printf("Successfully sent DEL-Request!\n Waiting on server...\n");
+
+        // Response from Server:
+        printf("DEL: \n");
+        memset(&buffer,'\0',sizeof(buffer));
+        size=recv(create_socket,buffer,BUF-1, 0);
+        if (size>0)
+        {
+           buffer[size]= '\0';
+           printf("%s",buffer);
+        }
+     }
      /* Edited by Natzki */
   }
   while (strcmp (buffer, "quit\n") != 0);
