@@ -137,6 +137,15 @@ int main (int argc, char **argv) {
         // Response from Server:
         printf("LIST: \n");
         memset(&buffer,'\0',sizeof(buffer));
+
+        do
+        {
+            size = recv(create_socket, buffer, BUF-1, 0);
+            buffer[size] = '\0';
+            printf("%s", buffer);
+
+        }while(size>0);
+
         size=recv(create_socket,buffer,BUF-1, 0);
         if (size>0)
         {

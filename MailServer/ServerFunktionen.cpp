@@ -112,6 +112,68 @@ std::vector<std::string> show_message(std::string csvfile, std::string recive_us
 	return my_message;
 }
 
+/* Edited by Natzki */
+//--------------------- Nachrichten eines Users zählen und deren Anzahl zurückgeben.---------------------------
+
+int count_messages(std::string csvfile, std::string recive_user)
+{
+    std::string line;
+    std::string textfile;
+    std::ifstream oldfile(csvfile);
+
+    int message_count = 0;
+
+    while(getline(oldfile, line, ','))
+    {
+        getline(oldfile, line, ',');
+
+        if(line == recive_user)
+        {
+            message_count++;
+        }
+        getline(oldfile, line, ',');
+        getline(oldfile, line);
+    }
+    if(message_count == 0)
+        return -1; // Error Case: Not a single message was found.
+    else
+        return message_count;
+}
+
+std::vector<std::string> list_subjects_and_msgCount(std::string csvfile, std::string recive_user)
+{
+    std::vector<std::string> count_and_topics;
+    std::string line;
+    std::ifstream file(csvfile);
+
+    int message_count = 0;
+
+    while(getline(file, line, ','))
+    {
+        getline(file, line, ',');
+
+        if(line == recive_user)
+        {
+            message_count++;
+            getline(file, line, ',');
+            count_and_topics.push_back(line);
+        }
+//        else
+//        {
+//            getline(oldfile, line, ','); // Is this needed?
+//        }
+        getline(file, line);
+    }
+    if(message_count == 0)
+    {
+        message_count = -1; // Error Case: Not a single message was found.
+    }
+    count_and_topics.push_back(std::to_string(message_count));
+    return count_and_topics;
+}
+/* Edited by Natzki */
+
+
 //---------------------Nachricht in csv und mit der dazugehörigen txt. Datei löschen.---------------------------
 
 bool delete_message(std::string csvfile, std::string recive_user, int file_number)

@@ -13,6 +13,12 @@ std::vector<std::string> search(std::string csvfile, std::string recive_user);
 //anzeigen einer bestimmten Nachricht
 std::vector<std::string> show_message(std::string csvfile, std::string recive_user, int file_number);
 
+// gibt Anzahl der Nachrichten eines gewissen Users zurück
+int count_messages(std::string csvfile, std::string recive_user);
+
+std::vector<std::string> list_subjects_and_msgCount(std::string csvfile, std::string recive_user);
+
+
 //löschen einer Nachricht
 bool delete_message(std::string csvfile, std::string recive_user, int file_number);
 
