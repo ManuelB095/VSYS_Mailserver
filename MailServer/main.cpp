@@ -163,15 +163,20 @@ int main (int argc, char **argv ) {
                 {
                     message_count = std::stoi(topics_and_count.back());
                     sendback_buffer = "Number of Messages: "; sendback_buffer += std::to_string(message_count); sendback_buffer += "\n";
-                    send(new_socket, sendback_buffer.c_str(), strlen(sendback_buffer.c_str()),0);
+                    //send(new_socket, sendback_buffer.c_str(), strlen(sendback_buffer.c_str()),0);
 
                     for(std::vector<std::string>::iterator i = topics_and_count.begin(); i != topics_and_count.end() - 1; ++i)
                     {
                         std::cout << *i << std::endl;
-                        sendback_buffer = *i;
+                        sendback_buffer += "<";
+                        sendback_buffer += *i;
+                        sendback_buffer += ">:";
                         sendback_buffer += '\n';
-                        send(new_socket, sendback_buffer.c_str(), strlen(sendback_buffer.c_str()),0);
+                        //send(new_socket, sendback_buffer.c_str(), strlen(sendback_buffer.c_str()),0);
                     }
+                    //sendback_buffer = ">>TERMINATE<<";
+                    /* A single send instead of n-consecutive ones, since clien seems to have trouble receiving the SEND Requests in a quick fashion.*/
+                    send(new_socket, sendback_buffer.c_str(), strlen(sendback_buffer.c_str()),0);
                 }
            }
 

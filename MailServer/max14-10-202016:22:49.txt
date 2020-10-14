@@ -1,0 +1,2 @@
+This is a test message. As you can see, it contains multiple sentences. It only stops after . and enter are given.
+

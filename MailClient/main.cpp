@@ -138,20 +138,20 @@ int main (int argc, char **argv) {
         printf("LIST: \n");
         memset(&buffer,'\0',sizeof(buffer));
 
-        do
-        {
-            size = recv(create_socket, buffer, BUF-1, 0);
-            buffer[size] = '\0';
-            printf("%s", buffer);
+        size = recv(create_socket, buffer, BUF-1, 0);
+        buffer[size] = '\0';
+        printf("%s", buffer);
 
-        }while(size>0);
-
-        size=recv(create_socket,buffer,BUF-1, 0);
-        if (size>0)
-        {
-           buffer[size]= '\0';
-           printf("%s",buffer);
-        }
+        /* Somehow only works, if client is restarted. Could not figure out exact problem yet.
+           To accomodate this for now: Changed Server-Code to single SEND for this single RECV */
+//        do
+//        {
+//            size = recv(create_socket, buffer, BUF-1, 0);
+//            buffer[size] = '\0';
+//            printf("%s", buffer);
+//            memset(&buffer,'\0',sizeof(buffer));
+//
+//        }while(strcmp(buffer, ">>TERMINATE<<") != 0);
      }
      if(strcmp(buffer, "DEL\n") == 0 || strcmp(buffer, "del\n") == 0)
      {
