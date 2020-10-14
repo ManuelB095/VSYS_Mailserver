@@ -143,6 +143,43 @@ int main (int argc, char **argv ) {
                     printf ("READ-Request - OK \n");
                 }
            }
+           if( line == "list" || line == "LIST" ) // => Handle LIST Request
+           {
+                string username;
+                string temp;
+                int message_count = -1;
+                getline(client_message, username);
+
+                string sendback_buffer;
+                printf("Processing list request... \n");
+                std::vector<std::string> topics_and_count = list_subjects_and_msgCount(csvfile, username);
+
+                if(topics_and_count.back() == "-1") // If no messages found, show ERROR and END Request
+                {
+                    sendback_buffer = "No entries for user '"; sendback_buffer += username; sendback_buffer += "' found...";
+                    printf ("LIST-Request - ERR \n");
+                }
+                else
+                {
+                    message_count = std::stoi(topics_and_count.back());
+                    sendback_buffer = "Number of Messages: "; sendback_buffer += std::to_string(message_count); sendback_buffer += "\n";
+                    //send(new_socket, sendback_buffer.c_str(), strlen(sendback_buffer.c_str()),0);
+
+                    for(std::vector<std::string>::iterator i = topics_and_count.begin(); i != topics_and_count.end() - 1; ++i)
+                    {
+                        std::cout << *i << std::endl;
+                        sendback_buffer += "<";
+                        sendback_buffer += *i;
+                        sendback_buffer += ">:";
+                        sendback_buffer += '\n';
+                        //send(new_socket, sendback_buffer.c_str(), strlen(sendback_buffer.c_str()),0);
+                    }
+                    //sendback_buffer = ">>TERMINATE<<";
+                    /* A single send instead of n-consecutive ones, since clien seems to have trouble receiving the SEND Requests in a quick fashion.*/
+                    send(new_socket, sendback_buffer.c_str(), strlen(sendback_buffer.c_str()),0);
+                }
+           }
+
            if( line == "del" || line == "DEL" ) // => Handle DELETE Request
            {
                 string username;
