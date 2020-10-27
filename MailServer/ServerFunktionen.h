@@ -4,7 +4,6 @@
 #include <ostream>
 #include <string>
 #include <sys/stat.h>
-#include <filesystem>
 #include <sys/types.h>
 #include <vector>
 //neue nachricht empfangen
@@ -22,6 +21,10 @@
 
 //löschen einer Nachricht
 //bool delete_message(std::string csvfile, std::string recive_user, int file_number);
+
+/*----------------------------------------------------------------------------------------------------------------------------------------------------*/
+/* NEW FILESYSTEM */
+/*----------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 //liest directory aus
 std::vector<std::string> read_directory(std::string directory);
