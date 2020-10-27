@@ -48,7 +48,7 @@ int handle_NUMERIC_message(std::string message, int socketfd, char* buffer, unsi
         fgets(temp_buf, buffer_MAX_len, stdin);
     }
 
-    if( strlen(temp_buf) > input_len) // For example: sender has 8-character limit
+    if( strlen(temp_buf) > input_len + 1) // For example: sender has 8-character limit
     {
         printf("Input exceeds character limit! Abort...\n");
         return -1; // Consistent with other socket error functions
@@ -63,7 +63,7 @@ int handle_ALPHANUMERIC_message(std::string message, int socketfd, char* buffer,
     char temp_buf[buffer_MAX_len] = {'\0'}; // Bit useless with so many chars... could just make input_len + 1 ?
     fgets(temp_buf, buffer_MAX_len, stdin);
 
-    if( strlen(temp_buf) > input_len) // For example: sender has 8-character limit
+    if( strlen(temp_buf) > input_len + 1) // For example: sender has 8-character limit
     {
         printf("Input exceeds character limit! Abort...\n");
         return -1; // Consistent with other socket error functions
