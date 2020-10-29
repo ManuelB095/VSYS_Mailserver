@@ -29,17 +29,23 @@
 
      **/
 
-/* Edited by Natzki */
 int main (int argc, char **argv) {
+
+/*----------------------------------------------------------------------------------------------------------------------------------------------------*/
+/* VARIABLES */
+/*----------------------------------------------------------------------------------------------------------------------------------------------------*/
   int create_socket;
   char buffer[BUF];
   struct sockaddr_in address;
   int size;
 
-  /* Edited by Natzki */
   unsigned int port = -1;
   std::string ip_address = "ERR";
-
+  bool loggedIn = false;
+  int invalid_attempts = 0;
+/*----------------------------------------------------------------------------------------------------------------------------------------------------*/
+/* INITIALIZE CLIENT */
+/*----------------------------------------------------------------------------------------------------------------------------------------------------*/
   if( argc < 3 ){
      printf("Usage: %s IP-Address PortNumber\n", argv[0]);
      exit(EXIT_FAILURE);
@@ -49,7 +55,6 @@ int main (int argc, char **argv) {
      std::string p(argv[2]); // Convert console argument to C++ String
      port = std::stoi(p); // String to Int.
   }
-  /*  */
 
   if ((create_socket = socket (AF_INET, SOCK_STREAM, 0)) == -1)
   {
@@ -57,7 +62,6 @@ int main (int argc, char **argv) {
      return EXIT_FAILURE;
   }
 
-  /* Edited by Natzki */
   memset(&address,0,sizeof(address));
   address.sin_family = AF_INET;
   address.sin_port = htons (port);
@@ -67,7 +71,6 @@ int main (int argc, char **argv) {
     {ip_address = argv[1];}
   const char* ip_address_c = ip_address.c_str();
   inet_aton (ip_address_c, &address.sin_addr); // Returns ZERO on failure ( unlike every other socket related function )! Takes IP in dotted form (a.b.c.d) and stores it in structure address.sin_addr ( Network Byte Order )
-  /* Edited by Natzki */
 
   if (connect ( create_socket, (struct sockaddr *) &address, sizeof (address)) == 0)
   {
@@ -85,15 +88,69 @@ int main (int argc, char **argv) {
      return EXIT_FAILURE;
   }
 
+  /*----------------------------------------------------------------------------------------------------------------------------------------------------*/
+  /* LOGIN - LOOP */
+  /*----------------------------------------------------------------------------------------------------------------------------------------------------*/
+    printf("You are currently not logged in to the LDAP Server.\n Please type LOGIN or login to connect before READ,LIST,SEND or DEL can be entered.\n ");
+    while(!loggedIn)
+    {
+        if(invalid_attempts >= 3)
+        {
+            printf("Too many unsuccessful tries! Abort program...");
+            close (create_socket);
+            return EXIT_SUCCESS;
+        }
+
+        printf ("Send message: ");
+        fgets (buffer, BUF, stdin);
+        if(strcmp(buffer, "quit\n") == 0)
+        {
+            close (create_socket);
+            return EXIT_SUCCESS;
+        }
+        else if(strcmp(buffer, "LOGIN\n") != 0)
+        {
+            printf("Please LOGIN first, before trying to use other functions!\n");
+            continue;
+        }
+
+        if(handle_LOGIN_request(create_socket, buffer, 8) == -1)
+        {
+            memset(&buffer,'\0',sizeof(buffer)); // Reset buffer to ZERO
+            perror("LOGIN Request not successful! Abort...");
+            continue; // Continue with loop
+        }
+        printf("Successfully sent LOGIN-Request!\n Waiting on server...\n");
+
+        // Response from Server:
+        printf("LOGIN: \n");
+        memset(&buffer,'\0',sizeof(buffer));
+        size=recv(create_socket,buffer,BUF-1, 0);
+        if (size>0)
+        {
+            buffer[size]= '\0';
+            printf("%s",buffer);
+            if(strcmp(buffer, "LOGIN-OK\n") == 0)
+                loggedIn = true; // Client hast gotten the OK from Server.
+            else
+            {
+                invalid_attempts++;
+                printf("LOGIN-ERR: Invalid username and/or password.\nYou have %i tries left\n", (3-invalid_attempts));
+            }
+        }
+
+    }
+
+/*----------------------------------------------------------------------------------------------------------------------------------------------------*/
+/* MAIN - LOOP */
+/*----------------------------------------------------------------------------------------------------------------------------------------------------*/
+
   do {
      printf ("Send message: ");
 
      /* Edited by Natzki */
-
-     /** SEND - FUNCTION: **/
-
-     // SEND\n
      fgets (buffer, BUF, stdin); // Reads characters from stream and stores them as a C string into str until (num-1) characters have been read or either a newline or the end-of-file is reached, whichever happens first.
+
      if(strcmp(buffer, "SEND\n") == 0 || strcmp(buffer, "send\n") == 0)
      {
         if(handle_SEND_request(create_socket, buffer, 8, 8, 80) == -1)
@@ -102,7 +159,12 @@ int main (int argc, char **argv) {
             perror("SEND Request not successful! Abort...");
             continue; // Continue with loop
         }
-        printf("Successfully sent message!\n");
+        size=recv(create_socket,buffer,BUF-1, 0);
+        if (size>0)
+        {
+           buffer[size]= '\0';
+           printf("%s",buffer);
+        }
      }
      if(strcmp(buffer, "READ\n") == 0 || strcmp(buffer, "read\n") == 0)
      {
@@ -124,7 +186,7 @@ int main (int argc, char **argv) {
            printf("%s",buffer);
         }
      }
-      if(strcmp(buffer, "LIST\n") == 0 || strcmp(buffer, "list\n") == 0)
+     if(strcmp(buffer, "LIST\n") == 0 || strcmp(buffer, "list\n") == 0)
      {
         if(handle_LIST_request(create_socket, buffer, 8) == -1)
         {
@@ -141,17 +203,6 @@ int main (int argc, char **argv) {
         size = recv(create_socket, buffer, BUF-1, 0);
         buffer[size] = '\0';
         printf("%s", buffer);
-
-        /* Somehow only works, if client is restarted. Could not figure out exact problem yet.
-           To accomodate this for now: Changed Server-Code to single SEND for this single RECV */
-//        do
-//        {
-//            size = recv(create_socket, buffer, BUF-1, 0);
-//            buffer[size] = '\0';
-//            printf("%s", buffer);
-//            memset(&buffer,'\0',sizeof(buffer));
-//
-//        }while(strcmp(buffer, ">>TERMINATE<<") != 0);
      }
      if(strcmp(buffer, "DEL\n") == 0 || strcmp(buffer, "del\n") == 0)
      {
@@ -173,7 +224,6 @@ int main (int argc, char **argv) {
            printf("%s",buffer);
         }
      }
-     /* Edited by Natzki */
   }
   while (strcmp (buffer, "quit\n") != 0);
   close (create_socket);

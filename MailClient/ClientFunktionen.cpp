@@ -1,5 +1,7 @@
 #include "ClientFunktionen.h"
 #include <algorithm>
+#include <termios.h>
+#include <iostream>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -10,17 +12,86 @@
 #include <stdio.h>
 
 
-/* Function Block */
-
-unsigned int count_elements(char* arr, unsigned int arr_len) // Obsolete with strlen
+/*----------------------------------------------------------------------------------------------------------------------------------------------------*/
+/* HELPER - FUNCTIONS */
+/*----------------------------------------------------------------------------------------------------------------------------------------------------*/
+int getch()
 {
-    unsigned int counter = 0;
-    while(arr[counter] != '\0' && arr[counter] != '\n')
-    {
-        ++counter;
-    }
-    return counter;
+    int ch;
+    // https://man7.org/linux/man-pages/man3/termios.3.html
+    struct termios t_old, t_new;
+
+    // https://man7.org/linux/man-pages/man3/termios.3.html
+    // tcgetattr() gets the parameters associated with the object referred
+    //   by fd and stores them in the termios structure referenced by
+    //   termios_p
+    tcgetattr(STDIN_FILENO, &t_old);
+
+    // copy old to new to have a base for setting c_lflags
+    t_new = t_old;
+
+    // https://man7.org/linux/man-pages/man3/termios.3.html
+    //
+    // ICANON Enable canonical mode (described below).
+    //   * Input is made available line by line (max 4096 chars).
+    //   * In noncanonical mode input is available immediately.
+    //
+    // ECHO   Echo input characters.
+    t_new.c_lflag &= ~(ICANON | ECHO);
+
+    // sets the attributes
+    // TCSANOW: the change occurs immediately.
+    tcsetattr(STDIN_FILENO, TCSANOW, &t_new);
+
+    ch = getchar();
+
+    // reset stored attributes
+    tcsetattr(STDIN_FILENO, TCSANOW, &t_old);
+
+    return ch;
 }
+
+const char *getpass()
+{
+    int show_asterisk = 0;
+
+    const char BACKSPACE = 127;
+    const char RETURN = 10;
+
+    unsigned char ch = 0;
+    std::string password;
+
+    printf("Password: ");
+
+    while ((ch = getch()) != RETURN)
+    {
+        if (ch == BACKSPACE)
+        {
+            if (password.length() != 0)
+            {
+                if (show_asterisk)
+                {
+                    printf("\b \b"); // backslash: \b
+                }
+                password.resize(password.length() - 1);
+            }
+        }
+        else
+        {
+            password += ch;
+            if (show_asterisk)
+            {
+                printf("*");
+            }
+        }
+    }
+    printf("\n");
+    return password.c_str();
+}
+
+/*----------------------------------------------------------------------------------------------------------------------------------------------------*/
+/* HANDLE USER INPUT */
+/*----------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 bool isNumerical(char* line)
 {
@@ -48,7 +119,7 @@ int handle_NUMERIC_message(std::string message, int socketfd, char* buffer, unsi
         fgets(temp_buf, buffer_MAX_len, stdin);
     }
 
-    if( strlen(temp_buf) > input_len) // For example: sender has 8-character limit
+    if( strlen(temp_buf) > input_len + 1) // For example: sender has 8-character limit
     {
         printf("Input exceeds character limit! Abort...\n");
         return -1; // Consistent with other socket error functions
@@ -63,12 +134,37 @@ int handle_ALPHANUMERIC_message(std::string message, int socketfd, char* buffer,
     char temp_buf[buffer_MAX_len] = {'\0'}; // Bit useless with so many chars... could just make input_len + 1 ?
     fgets(temp_buf, buffer_MAX_len, stdin);
 
-    if( strlen(temp_buf) > input_len) // For example: sender has 8-character limit
+    if( strlen(temp_buf) > input_len + 1) // For example: sender has 8-character limit
     {
         printf("Input exceeds character limit! Abort...\n");
         return -1; // Consistent with other socket error functions
     }
     strcat(buffer, temp_buf);
+    return 0;
+}
+
+/*----------------------------------------------------------------------------------------------------------------------------------------------------*/
+/* HANDLE REQUESTS */
+/*----------------------------------------------------------------------------------------------------------------------------------------------------*/
+int handle_LOGIN_request(int socketfd, char* buffer, unsigned int user_len, unsigned int buffer_MAX_len /*= BUF*/)
+{
+    // Communicate SEND Request to Server, so he knows what to expect!
+    memset(buffer, '\0', buffer_MAX_len*sizeof(char));
+    strcat(buffer, "LOGIN\n");
+
+    // Step 1: Ask for Username
+    std::string message = "Please enter username (max. ";
+    message += std::to_string(user_len); message += " characters): ";
+    if(handle_ALPHANUMERIC_message(message, socketfd, buffer, user_len) == -1)
+    {
+        return -1;
+    }
+
+    // Step 2: Ask for Password
+    strcat(buffer, getpass());
+
+    // Step 3: Send the whole message:
+    send(socketfd, buffer, strlen(buffer), 0);
     return 0;
 }
 

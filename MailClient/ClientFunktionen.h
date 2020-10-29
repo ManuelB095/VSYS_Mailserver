@@ -9,6 +9,9 @@ unsigned int count_elements(char* arr, unsigned int arr_len); /** Obsolete with 
 // Checks if given string contains only numbers
 bool isNumerical(char * line);
 
+// Get Password from User ( disables Console echo => Password invisible )
+const char* getpass();
+
 // Hanbdle Numeric Input
 int handle_NUMERIC_message(std::string message, int socketfd, char* buffer, unsigned int input_len, unsigned int buffer_MAX_len = BUF);
 
@@ -17,6 +20,9 @@ int handle_ALPHANUMERIC_message(std::string message, int socketfd, char* buffer,
 
 
 /* Request Handlers */
+
+// Handle the whole LOGIN Request
+int handle_LOGIN_request(int socketfd, char* buffer, unsigned int user_len, unsigned int buffer_MAX_len = BUF);
 
 // Handle the whole SEND-Request
 int handle_SEND_request(int socketfd, char* buffer, int sender_len, int recipient_len, int subject_len, unsigned int buffer_MAX_len = BUF);
