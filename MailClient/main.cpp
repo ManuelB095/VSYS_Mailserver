@@ -37,7 +37,7 @@ int main (int argc, char **argv) {
   int create_socket;
   char buffer[BUF];
   struct sockaddr_in address;
-  int size;
+  int size;  
 
   unsigned int port = -1;
   std::string ip_address = "ERR";
