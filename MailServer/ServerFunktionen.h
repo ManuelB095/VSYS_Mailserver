@@ -37,8 +37,8 @@ void create_new_entry(std::string send_user, std::string recive_user, std::strin
 //new list_subjects_and_msgCount
 std::vector<std::string> list_subjects_and_msgCount(std::string recive_user);
 //new show_message function
-std::vector<std::string> show_message(std::string recive_user, unsigned int file_number);
+std::vector<std::string> show_message(std::string recive_user, int file_number);
 //new delete_message function
-bool delete_message(std::string recive_user, unsigned int file_number);
+bool delete_message(std::string recive_user, int file_number);
 
 #endif

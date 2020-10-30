@@ -376,7 +376,7 @@ std::vector<std::string> list_subjects_and_msgCount(std::string recive_user)
 
 //new show_message function
 
-std::vector<std::string> show_message(std::string recive_user, unsigned int file_number)
+std::vector<std::string> show_message(std::string recive_user, int file_number)
 {
 	std::vector<std::string> my_message;
 	if (file_number == 0)
@@ -396,6 +396,7 @@ std::vector<std::string> show_message(std::string recive_user, unsigned int file
 	}
 	else
 	{
+		file_number -= 2; // DO NOT FORGET to reset counter!
 		std::ifstream textfile(directory + "/" + file_names[file_number - 1]); //txt. File wird geöffnet und gelesen
 		std::string text_part;
 		while (getline(textfile, text_part))
@@ -411,7 +412,7 @@ std::vector<std::string> show_message(std::string recive_user, unsigned int file
 
 //new delete_message function
 
-bool delete_message(std::string recive_user, unsigned int file_number)
+bool delete_message(std::string recive_user, int file_number)
 {
 	std::string directory = "MessageFolder/" + recive_user;
 
@@ -428,6 +429,7 @@ bool delete_message(std::string recive_user, unsigned int file_number)
 		return false;
 	}
 
+	file_number -= 2;
 	std::string path = directory + "/" + file_names[file_number - 1];
 	remove(path.c_str());
 

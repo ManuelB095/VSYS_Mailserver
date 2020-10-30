@@ -578,6 +578,8 @@ void HandleClient(int new_socket)
                    string sendback_buffer;
                    printf("Processing READ request... \n");
                    std::vector<std::string> requested_message = show_message(username, message_nr);
+                   string probe = requested_message[0];
+                   string probe2 = requested_message.back();
                    for (std::vector<std::string>::iterator i = requested_message.begin(); i != requested_message.end(); ++i)
                    {
                       std::cout << *i << std::endl;
