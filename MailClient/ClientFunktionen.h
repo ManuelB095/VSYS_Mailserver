@@ -12,10 +12,10 @@ bool isNumerical(char * line);
 const char* getpass();
 
 // Hanbdle Numeric Input
-int handle_NUMERIC_message(std::string message, int socketfd, char* buffer, unsigned int input_len, unsigned int buffer_MAX_len = BUF);
+int handle_NUMERIC_message(std::string message, char* buffer, unsigned int input_len, unsigned int buffer_MAX_len = BUF);
 
 // Handle alphanumeric input
-int handle_ALPHANUMERIC_message(std::string message, int socketfd, char* buffer, unsigned int input_len, unsigned int buffer_MAX_len = BUF);
+int handle_ALPHANUMERIC_message(std::string message, char* buffer, unsigned int input_len, unsigned int buffer_MAX_len = BUF);
 
 
 /* Request Handlers */

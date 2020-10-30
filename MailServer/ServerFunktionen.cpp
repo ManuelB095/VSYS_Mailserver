@@ -119,7 +119,6 @@
 	return my_message;
 }
 */
-/* Edited by Natzki */
 //--------------------- Nachrichten eines Users zählen und deren Anzahl zurückgeben.---------------------------
 /*
 int count_messages(std::string csvfile, std::string recive_user)
@@ -178,11 +177,10 @@ std::vector<std::string> list_subjects_and_msgCount(std::string csvfile, std::st
 	count_and_topics.push_back(std::to_string(message_count));
 	return count_and_topics;
 }
-/* Edited by Natzki */
 
 //---------------------Nachricht in csv und mit der dazugehörigen txt. Datei löschen.---------------------------
 
-/*bool delete_message(std::string csvfile, std::string recive_user, int file_number)
+bool delete_message(std::string csvfile, std::string recive_user, int file_number)
 {
 	//Zuerst wird herausgefunden um welche Line und text file es sich handelt, die gelöscht werden soll
 	std::string line;
@@ -232,11 +230,10 @@ std::vector<std::string> list_subjects_and_msgCount(std::string csvfile, std::st
 		if (count != line_number)
 		{
 			newfile << line << std::endl;
-			/* Edited by Natzki */
+
 // Commented this out for now, since it is not needed to show in console anymore.
 // std::cout << count << " " << line << std::endl;
-/* Edited by Natzki */
-/*	}
+	}
 		count++; //der Count ist nach dem Durchlauf, da im csv File die erste Line immer leer ist.
 	}
 	oldfile.close();
@@ -379,7 +376,7 @@ std::vector<std::string> list_subjects_and_msgCount(std::string recive_user)
 
 //new show_message function
 
-std::vector<std::string> show_message(std::string recive_user, int file_number)
+std::vector<std::string> show_message(std::string recive_user, unsigned int file_number)
 {
 	std::vector<std::string> my_message;
 	if (file_number == 0)
@@ -414,7 +411,7 @@ std::vector<std::string> show_message(std::string recive_user, int file_number)
 
 //new delete_message function
 
-bool delete_message(std::string recive_user, int file_number)
+bool delete_message(std::string recive_user, unsigned int file_number)
 {
 	std::string directory = "MessageFolder/" + recive_user;
 

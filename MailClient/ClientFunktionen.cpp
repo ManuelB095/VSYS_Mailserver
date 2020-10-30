@@ -110,7 +110,7 @@ bool isNumerical(char* line)
     return true;
 }
 
-int handle_NUMERIC_message(std::string message, int socketfd, char* buffer, unsigned int input_len, unsigned int buffer_MAX_len /*= BUF*/)
+int handle_NUMERIC_message(std::string message, char* buffer, unsigned int input_len, unsigned int buffer_MAX_len /*= BUF*/)
 {
     printf("%s", message.c_str());
     char temp_buf[buffer_MAX_len] = {'\0'};
@@ -133,7 +133,7 @@ int handle_NUMERIC_message(std::string message, int socketfd, char* buffer, unsi
     return 0;
 }
 
-int handle_ALPHANUMERIC_message(std::string message, int socketfd, char* buffer, unsigned int input_len, unsigned int buffer_MAX_len /*= BUF*/)
+int handle_ALPHANUMERIC_message(std::string message, char* buffer, unsigned int input_len, unsigned int buffer_MAX_len /*= BUF*/)
 {
     printf("%s", message.c_str()); // Some kind of unholy C/C++ abomination; but wanted to be consistent with printf instead of using cout
     char temp_buf[buffer_MAX_len] = {'\0'}; // Bit useless with so many chars... could just make input_len + 1 ?
@@ -201,7 +201,7 @@ int handle_SEND_request(int socketfd, char* buffer, const std::string &username,
     // Step 2: Ask for recipient
     message = "Please enter recipient (max. ";
     message += std::to_string(recipient_len); message += " characters): ";
-    if(handle_ALPHANUMERIC_message(message, socketfd, buffer, recipient_len) == -1)
+    if(handle_ALPHANUMERIC_message(message, buffer, recipient_len) == -1)
     {
         return -1;
     }
@@ -209,7 +209,7 @@ int handle_SEND_request(int socketfd, char* buffer, const std::string &username,
     // Step 3: Ask for message-subject
     message = "Please enter the subject-matter of your Mail (max. ";
     message += std::to_string(subject_len); message += " characters): ";
-    if(handle_ALPHANUMERIC_message(message, socketfd, buffer, subject_len) == -1)
+    if(handle_ALPHANUMERIC_message(message, buffer, subject_len) == -1)
     {
         return -1;
     }
@@ -253,7 +253,7 @@ int handle_READ_request(int socketfd, char* buffer, const std::string &username,
     message = "Please enter the message-number (max. ";
     int input_len = buffer_MAX_len - user_len;
     message += std::to_string(input_len); message += " digits): ";
-    if(handle_NUMERIC_message(message, socketfd, buffer, input_len) == -1)
+    if(handle_NUMERIC_message(message, buffer, input_len) == -1)
     {
         return -1;
     }
@@ -291,7 +291,7 @@ int handle_DEL_request(int socketfd, char* buffer, const std::string &username, 
     message = "Please enter the message-number (max. ";
     int input_len = buffer_MAX_len - user_len;
     message += std::to_string(input_len); message += " digits): ";
-    if(handle_NUMERIC_message(message, socketfd, buffer, input_len) == -1)
+    if(handle_NUMERIC_message(message, buffer, input_len) == -1)
     {
         return -1;
     }
