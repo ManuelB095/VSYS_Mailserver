@@ -144,7 +144,7 @@ int handle_ALPHANUMERIC_message(std::string message, int socketfd, char* buffer,
 }
 
 /*----------------------------------------------------------------------------------------------------------------------------------------------------*/
-/* HANDLE REQUESTS */
+// HANDLE REQUESTS
 /*----------------------------------------------------------------------------------------------------------------------------------------------------*/
 int handle_LOGIN_request(int socketfd, char* buffer, unsigned int user_len, unsigned int buffer_MAX_len /*= BUF*/)
 {

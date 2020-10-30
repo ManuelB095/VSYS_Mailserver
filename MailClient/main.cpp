@@ -43,6 +43,9 @@ int main (int argc, char **argv) {
   std::string ip_address = "ERR";
   bool loggedIn = false;
   int invalid_attempts = 0;
+
+  std::string username;
+  std::string pw;
 /*----------------------------------------------------------------------------------------------------------------------------------------------------*/
 /* INITIALIZE CLIENT */
 /*----------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -113,7 +116,7 @@ int main (int argc, char **argv) {
             printf("Please LOGIN first, before trying to use other functions!\n");
             continue;
         }
-
+        std::string user_input(buffer);
         if(handle_LOGIN_request(create_socket, buffer, 8) == -1)
         {
             memset(&buffer,'\0',sizeof(buffer)); // Reset buffer to ZERO
@@ -131,7 +134,9 @@ int main (int argc, char **argv) {
             buffer[size]= '\0';
             printf("%s",buffer);
             if(strcmp(buffer, "LOGIN-OK\n") == 0)
+            {
                 loggedIn = true; // Client hast gotten the OK from Server.
+            }
             else
             {
                 invalid_attempts++;
@@ -153,7 +158,7 @@ int main (int argc, char **argv) {
 
      if(strcmp(buffer, "SEND\n") == 0 || strcmp(buffer, "send\n") == 0)
      {
-        if(handle_SEND_request(create_socket, buffer, 8, 8, 80) == -1)
+        if(handle_SEND_request(create_socket, buffer, username, 8, 80) == -1)
         {
             memset(&buffer,'\0',sizeof(buffer)); // Reset buffer to ZERO
             perror("SEND Request not successful! Abort...");

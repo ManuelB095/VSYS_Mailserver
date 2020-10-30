@@ -25,7 +25,7 @@ int handle_ALPHANUMERIC_message(std::string message, int socketfd, char* buffer,
 int handle_LOGIN_request(int socketfd, char* buffer, unsigned int user_len, unsigned int buffer_MAX_len = BUF);
 
 // Handle the whole SEND-Request
-int handle_SEND_request(int socketfd, char* buffer, int sender_len, int recipient_len, int subject_len, unsigned int buffer_MAX_len = BUF);
+int handle_SEND_request(int socketfd, char* buffer, std::string &username, int recipient_len, int subject_len, unsigned int buffer_MAX_len = BUF);
 
 // Handle the whole READ-Request
 int handle_READ_request(int socketfd, char* buffer, unsigned int user_len, unsigned int buffer_MAX_len = BUF);
