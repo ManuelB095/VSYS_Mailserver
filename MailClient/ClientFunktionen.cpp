@@ -89,6 +89,11 @@ const char *getpass()
     return password.c_str();
 }
 
+void newline()
+{
+    printf("\n");
+}
+
 /*----------------------------------------------------------------------------------------------------------------------------------------------------*/
 /* HANDLE USER INPUT */
 /*----------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -146,19 +151,34 @@ int handle_ALPHANUMERIC_message(std::string message, int socketfd, char* buffer,
 /*----------------------------------------------------------------------------------------------------------------------------------------------------*/
 // HANDLE REQUESTS
 /*----------------------------------------------------------------------------------------------------------------------------------------------------*/
-int handle_LOGIN_request(int socketfd, char* buffer, unsigned int user_len, unsigned int buffer_MAX_len /*= BUF*/)
+int handle_LOGIN_request(int socketfd, char* buffer, std::string &username, unsigned int buffer_MAX_len /*= BUF*/)
 {
     // Communicate SEND Request to Server, so he knows what to expect!
     memset(buffer, '\0', buffer_MAX_len*sizeof(char));
     strcat(buffer, "LOGIN\n");
 
-    // Step 1: Ask for Username
-    std::string message = "Please enter username (max. ";
-    message += std::to_string(user_len); message += " characters): ";
-    if(handle_ALPHANUMERIC_message(message, socketfd, buffer, user_len) == -1)
+    printf("Please enter username (max. 8 characters): "); // Some kind of unholy C/C++ abomination; but wanted to be consistent with printf instead of using cout
+    char temp_buf[buffer_MAX_len] = {'\0'}; // Bit useless with so many chars... could just make input_len + 1 ?
+    fgets(temp_buf, buffer_MAX_len, stdin);
+
+    // Step 2: Temporarily set Username to User_input. Contains "\n"!
+    username = temp_buf;
+
+    if( strlen(temp_buf) > (8 + 1)) // For example: sender has 8-character limit
     {
-        return -1;
+        printf("Input exceeds character limit! Abort...\n");
+        return -1; // Consistent with other socket error functions
     }
+    strcat(buffer, temp_buf);
+
+
+//    // Step 1: Ask for Username
+//    std::string message = "Please enter username (max. ";
+//    message += std::to_string(user_len); message += " characters): ";
+//    if(handle_ALPHANUMERIC_message(message, socketfd, buffer, user_len) == -1)
+//    {
+//        return -1;
+//    }
 
     // Step 2: Ask for Password
     strcat(buffer, getpass());
@@ -168,20 +188,15 @@ int handle_LOGIN_request(int socketfd, char* buffer, unsigned int user_len, unsi
     return 0;
 }
 
-int handle_SEND_request(int socketfd, char* buffer, int sender_len, int recipient_len, int subject_len, unsigned int buffer_MAX_len /*= BUF*/)
+int handle_SEND_request(int socketfd, char* buffer, const std::string &username, int recipient_len, int subject_len, unsigned int buffer_MAX_len /*= BUF*/)
 {
 
     // Communicate SEND Request to Server, so he knows what to expect!
     memset(buffer, '\0', buffer_MAX_len*sizeof(char));
     strcat(buffer, "SEND\n");
-
-    // Step 1: Ask for sender
-    std::string message = "Please enter sender (max. ";
-    message += std::to_string(sender_len); message += " characters): ";
-    if(handle_ALPHANUMERIC_message(message, socketfd, buffer, sender_len) == -1)
-    {
-        return -1;
-    }
+    strcat(buffer, username.c_str());
+    int sender_len = username.length();
+    std::string message;
 
     // Step 2: Ask for recipient
     message = "Please enter recipient (max. ";
@@ -202,7 +217,7 @@ int handle_SEND_request(int socketfd, char* buffer, int sender_len, int recipien
     // Step 4: Ask for message-body
     message = "Please enter your message (max. ";
     int message_len = buffer_MAX_len - sender_len - recipient_len - subject_len;
-    message += std::to_string(message_len); message += " characters)\n Type '.' , then press ENTER to end your message:\n";
+    message += std::to_string(message_len); message += " characters)\nType '.' , then press ENTER to end your message:\n\n";
     printf("%s", message.c_str()); // Some kind of unholy C/C++ abomination; but wanted to be consistent with printf instead of using cout
     char temp_buffer[buffer_MAX_len] = {'\0'};
     do // Writes to buffer until either '.\n' or buffer is full, which causes an error message to display
@@ -223,19 +238,16 @@ int handle_SEND_request(int socketfd, char* buffer, int sender_len, int recipien
     return 0;
 }
 
-int handle_READ_request(int socketfd, char* buffer, unsigned int user_len, unsigned int buffer_MAX_len /*= BUF*/)
+int handle_READ_request(int socketfd, char* buffer, const std::string &username, unsigned int buffer_MAX_len /*= BUF*/)
 {
     // Communicate SEND Request to Server, so he knows what to expect!
     memset(buffer, '\0', buffer_MAX_len*sizeof(char));
     strcat(buffer, "READ\n");
 
-    // Step 1: Ask for Username
-    std::string message = "Please enter username (max. ";
-    message += std::to_string(user_len); message += " characters): ";
-    if(handle_ALPHANUMERIC_message(message, socketfd, buffer, user_len) == -1)
-    {
-        return -1;
-    }
+    // Step 1: Enter username to buffer
+    strcat(buffer, username.c_str());
+    int user_len = username.length();
+    std::string message;
 
     // Step 2: Ask for Message-Number ( Included digit size, because buffer can only hold 1024 characters and last one must be '\0'
     message = "Please enter the message-number (max. ";
@@ -252,19 +264,13 @@ int handle_READ_request(int socketfd, char* buffer, unsigned int user_len, unsig
     return 0;
 }
 
-int handle_LIST_request(int socketfd, char* buffer, unsigned int user_len, unsigned int buffer_MAX_len /*= BUF*/)
+int handle_LIST_request(int socketfd, char* buffer, const std::string &username, unsigned int buffer_MAX_len /*= BUF*/)
 {
     // Communicate LIST Request to Server, so he knows what to expect!
     memset(buffer, '\0', buffer_MAX_len*sizeof(char));
     strcat(buffer, "LIST\n");
-
-    // Step 1: Ask for Username
-    std::string message = "Please enter username (max. ";
-    message += std::to_string(user_len); message += " characters): ";
-    if(handle_ALPHANUMERIC_message(message, socketfd, buffer, user_len) == -1)
-    {
-        return -1;
-    }
+    strcat(buffer, username.c_str());
+    std::string message;
 
     // Step 2: Send the whole message:
     send(socketfd, buffer, strlen(buffer), 0);
@@ -272,19 +278,14 @@ int handle_LIST_request(int socketfd, char* buffer, unsigned int user_len, unsig
     return 0;
 }
 
-int handle_DEL_request(int socketfd, char* buffer, unsigned int user_len, unsigned int buffer_MAX_len /*= BUF*/)
+int handle_DEL_request(int socketfd, char* buffer, const std::string &username, unsigned int buffer_MAX_len /*= BUF*/)
 {
     // Communicate SEND Request to Server, so he knows what to expect!
     memset(buffer, '\0', buffer_MAX_len*sizeof(char));
     strcat(buffer, "DEL\n");
-
-    // Step 1: Ask for Username
-    std::string message = "Please enter username (max. ";
-    message += std::to_string(user_len); message += " characters): ";
-    if(handle_ALPHANUMERIC_message(message, socketfd, buffer, user_len) == -1)
-    {
-        return -1;
-    }
+    strcat(buffer, username.c_str());
+    int user_len = username.length();
+    std::string message;
 
     // Step 2: Ask for Message-Number ( Included digit size, because buffer can only hold 1024 characters and last one must be '\0'
     message = "Please enter the message-number (max. ";

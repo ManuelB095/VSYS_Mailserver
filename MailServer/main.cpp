@@ -121,7 +121,7 @@ int main(int argc, char **argv)
       {
          strcpy(buffer, "Refused Connection!");
          send(new_socket, buffer, strlen(buffer), 0);
-         printf("Refused Connection from %s:%d...\n", inet_ntoa(cliaddress.sin_addr), ntohs(cliaddress.sin_port));
+         printf("Refused Connection from %s:%d...\n\n", inet_ntoa(cliaddress.sin_addr), ntohs(cliaddress.sin_port));
          close(new_socket);
          if(num_of_threads >= 0)
             num_of_threads--;
@@ -131,7 +131,7 @@ int main(int argc, char **argv)
       /*----------------------------------------------------------------------------------------------------------------------------------------- */
       /** This is where Thread should start! Parameters: new_socket Variables needed from above: int size; char buffer[BUF]; Keep track of Client: Idk, IP? But we only connect with localhost...**/
       /*----------------------------------------------------------------------------------------------------------------------------------------- */
-         printf("Client connected from %s:%d...\n", inet_ntoa(cliaddress.sin_addr), ntohs(cliaddress.sin_port));
+         printf("Client connected from %s:%d...\n\n", inet_ntoa(cliaddress.sin_addr), ntohs(cliaddress.sin_port));
          num_of_threads++;
          std::thread new_thread(HandleClient, new_socket);
          new_thread.detach();
@@ -440,6 +440,7 @@ void HandleClient(int new_socket)
             nextTry = time(0) + WAIT; // This makes a kind of barebones "Timestamp" to check whether client can try reconnecting again.
             string sendback_buffer = "Server refused connection due to invalid LOGIN attempts. Please try again later";
             send(new_socket, sendback_buffer.c_str(), strlen(sendback_buffer.c_str()), 0);
+            printf("Connection closed.\n\n");
 
             /* CLient closes after receiving this message !*/
 
@@ -540,6 +541,7 @@ void HandleClient(int new_socket)
                send(new_socket, sendback_buffer.c_str(), strlen(sendback_buffer.c_str()), 0);
 
                ldap_unbind_ext_s(ldapHandle, NULL, NULL);
+               printf("Client successfully Logged int.\n\n");
                continue;
             }
 
@@ -562,7 +564,7 @@ void HandleClient(int new_socket)
                    create_new_entry(sender, recipient, subject_matter, txt_message);
                    string sendback_buffer = "SEND-Request - SUCCESSFUL\n";
                    send(new_socket, sendback_buffer.c_str(), strlen(sendback_buffer.c_str()), 0);
-                   printf("Message received: SEND-Request - OK \n");
+                   printf("Message received: SEND-Request - Status OK \n");
                 }
                 if (line == "read" || line == "READ") // => Handle READ Request
                 {
@@ -574,7 +576,7 @@ void HandleClient(int new_socket)
                    message_nr = std::stoi(temp);
 
                    string sendback_buffer;
-                   printf("Processing read request... \n");
+                   printf("Processing READ request... \n");
                    std::vector<std::string> requested_message = show_message(username, message_nr);
                    for (std::vector<std::string>::iterator i = requested_message.begin(); i != requested_message.end(); ++i)
                    {
@@ -588,11 +590,11 @@ void HandleClient(int new_socket)
                    /** TO DO: Compromise on a better way to handle that. Also: German/English - which one should we use?**/
                    if (requested_message.back() == "Fehler. Sie haben nicht so viele Nachrichten")
                    {
-                      printf("READ-Request - ERR \n");
+                      printf("READ-Request - Status: ERR \n\n");
                    }
                    else
                    {
-                      printf("READ-Request - OK \n");
+                      printf("READ-Request - Status: OK \n\n");
                    }
                 }
                 if (line == "list" || line == "LIST") // => Handle LIST Request
@@ -603,7 +605,7 @@ void HandleClient(int new_socket)
                    getline(client_message, username);
                    std::cout << username << std::endl;
                    string sendback_buffer;
-                   printf("Processing list request... \n");
+                   printf("Processing LIST request... \n");
                    //std::vector<std::string> topics_and_count = list_subjects_and_msgCount(csvfile, username);
                    std::vector<std::string> topics_and_count = list_subjects_and_msgCount(username); //new list_subjects_and_msgCount function
 
@@ -612,7 +614,7 @@ void HandleClient(int new_socket)
                       sendback_buffer = "No entries for user '";
                       sendback_buffer += username;
                       sendback_buffer += "' found... \n";
-                      printf("LIST-Request - ERR \n");
+                      printf("LIST-Request - Status: ERR \n\n");
                       send(new_socket, sendback_buffer.c_str(), strlen(sendback_buffer.c_str()), 0);
                    }
                    else
@@ -627,6 +629,7 @@ void HandleClient(int new_socket)
                       }
                       /* A single send instead of n-consecutive ones, since clien seems to have trouble receiving the SEND Requests in a quick fashion.*/
                       send(new_socket, sendback_buffer.c_str(), strlen(sendback_buffer.c_str()), 0);
+                      printf("LIST-Request - Status: OK \n\n");
                    }
                 }
 
@@ -640,7 +643,7 @@ void HandleClient(int new_socket)
                    message_nr = std::stoi(temp);
 
                    string sendback_buffer;
-                   printf("Processing delete request... \n");
+                   printf("Processing DEL (delete) request... \n");
                    bool hasDeleted = delete_message(username, message_nr);
                    if (hasDeleted)
                    {
@@ -650,7 +653,7 @@ void HandleClient(int new_socket)
                       sendback_buffer += std::to_string(message_nr);
                       sendback_buffer += " was successfully deleted!\n";
                       send(new_socket, sendback_buffer.c_str(), strlen(sendback_buffer.c_str()), 0);
-                      printf("DEL-Request - OK \n");
+                      printf("DEL-Request - Status: OK \n\n");
                    }
                    else
                    {
@@ -660,13 +663,13 @@ void HandleClient(int new_socket)
                       sendback_buffer += std::to_string(message_nr);
                       sendback_buffer += "!\n";
                       send(new_socket, sendback_buffer.c_str(), strlen(sendback_buffer.c_str()), 0);
-                      printf("DEL-Request - ERR \n");
+                      printf("DEL-Request - Status: ERR \n\n");
                    }
                 }
             }
             else if(!isLoggedIn)
             {
-                printf("Unauthorized Command - User not logged in!");
+                printf("Unauthorized Command - User not logged in!\n");
                 string sendback_buffer;
                 sendback_buffer = "ERR\n";
                 send(new_socket, sendback_buffer.c_str(), strlen(sendback_buffer.c_str()), 0);

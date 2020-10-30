@@ -94,7 +94,7 @@ int main (int argc, char **argv) {
   /*----------------------------------------------------------------------------------------------------------------------------------------------------*/
   /* LOGIN - LOOP */
   /*----------------------------------------------------------------------------------------------------------------------------------------------------*/
-    printf("You are currently not logged in to the LDAP Server.\n Please type LOGIN or login to connect before READ,LIST,SEND or DEL can be entered.\n ");
+    printf("Client: You are currently not logged in to the LDAP Server.\nPlease type LOGIN or login to connect first.\n");
     while(!loggedIn)
     {
         if(invalid_attempts >= 3)
@@ -103,7 +103,7 @@ int main (int argc, char **argv) {
             close (create_socket);
             return EXIT_SUCCESS;
         }
-
+        newline();
         printf ("Send message: ");
         fgets (buffer, BUF, stdin);
         if(strcmp(buffer, "quit\n") == 0)
@@ -116,17 +116,18 @@ int main (int argc, char **argv) {
             printf("Please LOGIN first, before trying to use other functions!\n");
             continue;
         }
-        std::string user_input(buffer);
-        if(handle_LOGIN_request(create_socket, buffer, 8) == -1)
+
+        newline();
+        if(handle_LOGIN_request(create_socket, buffer, username) == -1)
         {
             memset(&buffer,'\0',sizeof(buffer)); // Reset buffer to ZERO
             perror("LOGIN Request not successful! Abort...");
             continue; // Continue with loop
         }
-        printf("Successfully sent LOGIN-Request!\n Waiting on server...\n");
+        printf("Successfully sent LOGIN-Request!\nWaiting on server...\n\n");
 
         // Response from Server:
-        printf("LOGIN: \n");
+        printf("Response: ");
         memset(&buffer,'\0',sizeof(buffer));
         size=recv(create_socket,buffer,BUF-1, 0);
         if (size>0)
@@ -140,7 +141,8 @@ int main (int argc, char **argv) {
             else
             {
                 invalid_attempts++;
-                printf("LOGIN-ERR: Invalid username and/or password.\nYou have %i tries left\n", (3-invalid_attempts));
+                username = "";
+                printf("LOGIN-ERR: Invalid username and/or password.\nYou have %i tries left\n\n", (3-invalid_attempts));
             }
         }
 
@@ -151,6 +153,7 @@ int main (int argc, char **argv) {
 /*----------------------------------------------------------------------------------------------------------------------------------------------------*/
 
   do {
+     newline();
      printf ("Send message: ");
 
      /* Edited by Natzki */
@@ -158,6 +161,7 @@ int main (int argc, char **argv) {
 
      if(strcmp(buffer, "SEND\n") == 0 || strcmp(buffer, "send\n") == 0)
      {
+        newline();
         if(handle_SEND_request(create_socket, buffer, username, 8, 80) == -1)
         {
             memset(&buffer,'\0',sizeof(buffer)); // Reset buffer to ZERO
@@ -173,7 +177,8 @@ int main (int argc, char **argv) {
      }
      if(strcmp(buffer, "READ\n") == 0 || strcmp(buffer, "read\n") == 0)
      {
-        if(handle_READ_request(create_socket, buffer, 8) == -1)
+        newline();
+        if(handle_READ_request(create_socket, buffer, username) == -1)
         {
             memset(&buffer,'\0',sizeof(buffer)); // Reset buffer to ZERO
             perror("READ Request not successful! Abort...");
@@ -193,7 +198,8 @@ int main (int argc, char **argv) {
      }
      if(strcmp(buffer, "LIST\n") == 0 || strcmp(buffer, "list\n") == 0)
      {
-        if(handle_LIST_request(create_socket, buffer, 8) == -1)
+        newline();
+        if(handle_LIST_request(create_socket, buffer, username) == -1)
         {
             memset(&buffer,'\0',sizeof(buffer)); // Reset buffer to ZERO
             perror("READ Request not successful! Abort...");
@@ -211,7 +217,8 @@ int main (int argc, char **argv) {
      }
      if(strcmp(buffer, "DEL\n") == 0 || strcmp(buffer, "del\n") == 0)
      {
-        if(handle_DEL_request(create_socket, buffer, 8) == -1)
+        newline();
+        if(handle_DEL_request(create_socket, buffer, username) == -1)
         {
             memset(&buffer,'\0',sizeof(buffer)); // Reset buffer to ZERO
             perror("DEL Request not successful! Abort...");
