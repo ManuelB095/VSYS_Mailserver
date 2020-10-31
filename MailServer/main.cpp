@@ -61,6 +61,7 @@ int main(int argc, char **argv)
 
    std::vector<std::thread>server_threads;
    int num_of_threads = 0;
+   string clientBlockingList[MAX_THREADS][1];
 
 
    ////////////////////////////////////////////////////////////////////////////
@@ -541,7 +542,7 @@ void HandleClient(int new_socket)
                send(new_socket, sendback_buffer.c_str(), strlen(sendback_buffer.c_str()), 0);
 
                ldap_unbind_ext_s(ldapHandle, NULL, NULL);
-               printf("Client successfully Logged int.\n\n");
+               printf("Client successfully Logged in.\n\n");
                continue;
             }
 

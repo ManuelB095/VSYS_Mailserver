@@ -5,6 +5,9 @@
 
 void newline();
 
+// For debugging Purposes: Waits until given time, so multiple clients can connect simultaneously
+bool waitUntil(time_t w_time);
+
 // Checks if given string contains only numbers
 bool isNumerical(char * line);
 

@@ -94,6 +94,16 @@ void newline()
     printf("\n");
 }
 
+bool waitUntil(time_t w_time)
+{
+    time_t now = time(0);
+    if(now >= w_time)
+    {
+        return true;
+    }
+    return false;
+}
+
 /*----------------------------------------------------------------------------------------------------------------------------------------------------*/
 /* HANDLE USER INPUT */
 /*----------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -183,6 +193,12 @@ int handle_LOGIN_request(int socketfd, char* buffer, std::string &username, unsi
     // Step 2: Ask for Password
     strcat(buffer, getpass());
 
+    time_t then = time(0) + 30;
+    while(waitUntil(then) != true)
+    {
+        // Do nothing
+    }
+
     // Step 3: Send the whole message:
     send(socketfd, buffer, strlen(buffer), 0);
     return 0;
@@ -232,6 +248,11 @@ int handle_SEND_request(int socketfd, char* buffer, const std::string &username,
         }
     }while(buffer[strlen(buffer)-2] != '.');
 
+    time_t then = time(0) + 30;
+    while(waitUntil(then) != true)
+    {
+        // Do nothing
+    }
     // Step 5: Send the whole message:
     send(socketfd, buffer, strlen(buffer), 0);
 
@@ -257,6 +278,11 @@ int handle_READ_request(int socketfd, char* buffer, const std::string &username,
     {
         return -1;
     }
+    time_t then = time(0) + 30;
+    while(waitUntil(then) != true)
+    {
+        // Do nothing
+    }
 
     // Step 3: Send the whole message:
     send(socketfd, buffer, strlen(buffer), 0);
@@ -271,6 +297,11 @@ int handle_LIST_request(int socketfd, char* buffer, const std::string &username,
     strcat(buffer, "LIST\n");
     strcat(buffer, username.c_str());
     std::string message;
+    time_t then = time(0) + 30;
+    while(waitUntil(then) != true)
+    {
+        // Do nothing
+    }
 
     // Step 2: Send the whole message:
     send(socketfd, buffer, strlen(buffer), 0);
@@ -296,6 +327,11 @@ int handle_DEL_request(int socketfd, char* buffer, const std::string &username, 
         return -1;
     }
 
+    time_t then = time(0) + 30;
+    while(waitUntil(then) != true)
+    {
+        // Do nothing
+    }
     // Step 3: Send the whole message:
     send(socketfd, buffer, strlen(buffer), 0);
 
