@@ -194,12 +194,6 @@ int handle_LOGIN_request(int socketfd, char *buffer, std::string &username, unsi
     // Step 2: Ask for Password
     strcat(buffer, getpass());
 
-    time_t then = time(0) + 30;
-    while (waitUntil(then) != true)
-    {
-        // Do nothing
-    }
-
     // Step 3: Send the whole message:
     send(socketfd, buffer, strlen(buffer), 0);
     return 0;

@@ -8,7 +8,7 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/Mailserver",
+            "program": "${workspaceFolder}/MailServer",
             "args": ["6543"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
