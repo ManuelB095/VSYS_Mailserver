@@ -171,7 +171,8 @@ std::vector<std::string> show_message(std::string recive_user, int file_number)
 	}
 	else
 	{
-		file_number -= 2;													   // DO NOT FORGET to reset counter!
+		if(file_names[0] != "." || file_names[0] != "..")
+			{file_number -= 2;}															   // DO NOT FORGET to reset counter!
 		std::ifstream textfile(directory + "/" + file_names[file_number - 1]); //txt. File wird geöffnet und gelesen
 		std::string text_part;
 		while (getline(textfile, text_part))
