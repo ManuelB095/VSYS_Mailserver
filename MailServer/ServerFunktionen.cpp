@@ -198,19 +198,19 @@ bool delete_message(std::string recive_user, int file_number)
 	{
 		return false;
 	}
-	file_number += 2;
 
 	std::lock_guard<std::mutex> lock(stop);
 
 	std::vector<std::string> file_names = read_directory(directory);
 
-	if (file_number > file_names.size())
+	if (file_number + 2 > file_names.size())
 	{
 
 		return false;
 	}
 
-	file_number -= 2;
+	if(file_names[0] == "." || file_names[0] == "..") // If Windows Folder-System, "." and ".." are first; Linux they are last!
+			{file_number += 2;}
 	std::string path = directory + "/" + file_names[file_number - 1];
 
 	remove(path.c_str());

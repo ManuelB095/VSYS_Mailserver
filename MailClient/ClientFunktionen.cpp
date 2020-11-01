@@ -130,7 +130,7 @@ int handle_NUMERIC_message(std::string message, char *buffer, unsigned int input
 
     while (!isNumerical(temp_buf))
     {
-        printf("Your input contained non-numerical characters!");
+        printf("Your input contained not-allowed characters!\n");
         printf("%s", message.c_str());
         memset(temp_buf, '\0', buffer_MAX_len * sizeof(char));
         fgets(temp_buf, buffer_MAX_len, stdin);
