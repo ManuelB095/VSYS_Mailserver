@@ -164,7 +164,7 @@ std::vector<std::string> show_message(std::string recive_user, int file_number)
 
 	std::vector<std::string> file_names = read_directory(directory);
 
-	if (file_number > file_names.size())
+	if (file_number + 2 > file_names.size())
 	{
 		my_message.push_back("Fehler. Sie haben nicht so viele Nachrichten");
 	}
