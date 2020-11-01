@@ -119,7 +119,6 @@
 	return my_message;
 }
 */
-/* Edited by Natzki */
 //--------------------- Nachrichten eines Users zählen und deren Anzahl zurückgeben.---------------------------
 /*
 int count_messages(std::string csvfile, std::string recive_user)
@@ -178,11 +177,10 @@ std::vector<std::string> list_subjects_and_msgCount(std::string csvfile, std::st
 	count_and_topics.push_back(std::to_string(message_count));
 	return count_and_topics;
 }
-/* Edited by Natzki */
 
 //---------------------Nachricht in csv und mit der dazugehörigen txt. Datei löschen.---------------------------
 
-/*bool delete_message(std::string csvfile, std::string recive_user, int file_number)
+bool delete_message(std::string csvfile, std::string recive_user, int file_number)
 {
 	//Zuerst wird herausgefunden um welche Line und text file es sich handelt, die gelöscht werden soll
 	std::string line;
@@ -232,11 +230,10 @@ std::vector<std::string> list_subjects_and_msgCount(std::string csvfile, std::st
 		if (count != line_number)
 		{
 			newfile << line << std::endl;
-			/* Edited by Natzki */
+
 // Commented this out for now, since it is not needed to show in console anymore.
 // std::cout << count << " " << line << std::endl;
-/* Edited by Natzki */
-/*	}
+	}
 		count++; //der Count ist nach dem Durchlauf, da im csv File die erste Line immer leer ist.
 	}
 	oldfile.close();
@@ -247,6 +244,11 @@ std::vector<std::string> list_subjects_and_msgCount(std::string csvfile, std::st
 
 	return true;
 }*/
+
+void newline()
+{
+    printf("\n");
+}
 
 //#########################################################################################################################################################
 //#########################################################################################################################################################
@@ -394,6 +396,7 @@ std::vector<std::string> show_message(std::string recive_user, int file_number)
 	}
 	else
 	{
+		file_number -= 2; // DO NOT FORGET to reset counter!
 		std::ifstream textfile(directory + "/" + file_names[file_number - 1]); //txt. File wird geöffnet und gelesen
 		std::string text_part;
 		while (getline(textfile, text_part))
@@ -426,6 +429,7 @@ bool delete_message(std::string recive_user, int file_number)
 		return false;
 	}
 
+	file_number -= 2;
 	std::string path = directory + "/" + file_names[file_number - 1];
 	remove(path.c_str());
 

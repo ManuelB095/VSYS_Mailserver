@@ -1,0 +1,27 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "compile",
+            "command": "g++",
+            "args": [
+                "-g",
+                "-Wall",
+                "-O",
+                "-std=c++11",
+                "-I",
+                "/usr/local/include/gtest",
+                "-pthread",
+                "-o",
+                "MailServer",
+                "${workspaceFolder}/main.cpp",
+				"${workspaceFolder}/ServerFunktionen.cpp",
+				"-lldap",
+				"-llber"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        }
+    ]
+}
