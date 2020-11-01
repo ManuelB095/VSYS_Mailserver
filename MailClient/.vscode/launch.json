@@ -8,7 +8,11 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
+<<<<<<< HEAD
             "program": "${workspaceFolder}/Mailclient",
+=======
+            "program": "${workspaceFolder}/MailClient",
+>>>>>>> bf499491549d44e1b37f9553acfa3e9c092d96c7
             "args": ["localhost", "6543"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
